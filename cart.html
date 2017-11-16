@@ -69,7 +69,7 @@
                     <li class="list_amount">
                         <div class="amount_box">
                             <a href="javascript:;" class="reduce reSty" @click="reduce(pro)">-</a>
-                            <input type="text" v-model="pro.num" class="sum">
+                            <input type="text" v-model="pro.num" class="sum" v-on:input="calculate(pro)">
                             <a href="javascript:;" class="plus" @click="add(pro)">+</a>
                         </div>
                     </li>
@@ -212,9 +212,9 @@
                 choosetrue(item,pro){
                     pro.checked=true//将商品选中状态改为true
                     ++item.choose===item.products.length?item.check=true:''//这里执行了两部，选中商品数量先+1，再与该店铺商品数量比较，如果相等就更改店铺选中状态为true
-                    item.check?++this.fetchData.allchoose===this.fetchData.list.length?this.fetchData.status=true:this.fetchData.status=false:''//如果店铺选中状态改为true，选中店铺数量先+1，再与店铺数量比较，如果相等就更改全选选中状态为true      
+                    item.check?++this.fetchData.allchoose===this.fetchData.list.length?this.fetchData.status=true:this.fetchData.status=false:''//如果店铺选中状态改为true，选中店铺数量先+1，再与店铺数量比较，如果相等就更改全选选中状态为true     
                     this.fetchData.allsum+=pro.sum
-                    this.fetchData.allnum+=pro.num
+                    this.fetchData.allnum+=parseInt(pro.num)
                 },
                 choosefalse(item,pro){
                     pro.checked=false//将商品选中状态改为false
@@ -249,6 +249,7 @@
                 },
                 add(pro){
                     pro.num++
+                    pro.checked?this.fetchData.allnum++:''
                     pro.sum+=pro.price
                     pro.checked?this.fetchData.allsum+=pro.price:this.fetchData.allsum
                 },
@@ -257,8 +258,20 @@
                         pro.num
                     }else{
                         pro.num--
+                        pro.checked?this.fetchData.allnum--:''
                         pro.sum-=pro.price
                         pro.checked?this.fetchData.allsum-=pro.price:this.fetchData.allsum
+                    }
+                },
+                calculate(pro){
+                    if(pro.checked){
+                        let oldsum=pro.sum
+                        let oldnum=oldsum/pro.price
+                        pro.sum=pro.num*pro.price
+                        let diffsum=pro.sum-oldsum
+                        let diffnum=pro.num-oldnum
+                        this.fetchData.allsum+=diffsum
+                        this.fetchData.allnum+=diffnum
                     }
                 }
             }
