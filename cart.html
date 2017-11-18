@@ -264,14 +264,15 @@
                     }
                 },
                 calculate(pro){
-                    if(pro.checked){
-                        let oldsum=pro.sum
-                        let oldnum=oldsum/pro.price
-                        pro.sum=pro.num*pro.price
-                        let diffsum=pro.sum-oldsum
-                        let diffnum=pro.num-oldnum
-                        this.fetchData.allsum+=diffsum
-                        this.fetchData.allnum+=diffnum
+                    let oldsum=pro.sum//之前的总价
+                    let oldnum=oldsum/pro.price//之前的数量
+                    pro.num=parseInt(pro.num)//现在的数量
+                    pro.num>0?pro.sum=pro.num*pro.price:pro.num=oldnum//如果输入数量大于0，计算价格，否则返回之前的数量
+                    let diffsum=pro.sum-oldsum//差价
+                    let diffnum=pro.num-oldnum//差量
+                    if(pro.checked){//如果商品被选中                        
+                        this.fetchData.allsum+=diffsum//计算总价
+                        this.fetchData.allnum+=diffnum//计算总量
                     }
                 }
             }
