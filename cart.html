@@ -69,7 +69,7 @@
                     <li class="list_amount">
                         <div class="amount_box">
                             <a href="javascript:;" class="reduce reSty" @click="reduce(pro)">-</a>
-                            <input type="text" v-model="pro.num" class="sum" v-on:input="calculate(pro)">
+                            <input type="number" v-model="pro.num" class="sum" v-on:input="calculate(pro)">
                             <a href="javascript:;" class="plus" @click="add(pro)">+</a>
                         </div>
                     </li>
@@ -214,7 +214,7 @@
                     ++item.choose===item.products.length?item.check=true:''//这里执行了两部，选中商品数量先+1，再与该店铺商品数量比较，如果相等就更改店铺选中状态为true
                     item.check?++this.fetchData.allchoose===this.fetchData.list.length?this.fetchData.status=true:this.fetchData.status=false:''//如果店铺选中状态改为true，选中店铺数量先+1，再与店铺数量比较，如果相等就更改全选选中状态为true     
                     this.fetchData.allsum+=pro.sum
-                    this.fetchData.allnum+=parseInt(pro.num)
+                    this.fetchData.allnum+=pro.num
                 },
                 choosefalse(item,pro){
                     pro.checked=false//将商品选中状态改为false
@@ -232,12 +232,12 @@
                 },
                 shoptrue(item){
                     item.products.forEach((pro)=>{
-                        pro.checked===false?this.choosetrue(item,pro):''//循环店铺中的商品，先筛选出目前没选中的商品，给它执行choosetrue函数
+                        pro.checked===false&&this.choosetrue(item,pro)//循环店铺中的商品，先筛选出目前没选中的商品，给它执行choosetrue函数
                     })
                 },
                 shopfalse(item){
                     item.products.forEach((pro)=>{
-                        pro.checked===true?this.choosefalse(item,pro):''//循环店铺中的商品，先筛选出目前被选中的商品，给它执行choosefalse函数
+                        pro.checked===true&&this.choosefalse(item,pro)//循环店铺中的商品，先筛选出目前被选中的商品，给它执行choosefalse函数
                     })
                 },
                 shopchoose(item){
@@ -245,28 +245,31 @@
                 },
                 cartchoose(){
                     this.fetchData.status=!this.fetchData.status//取反改变状态
-                    this.fetchData.status?this.fetchData.list.forEach((item)=>this.shoptrue(item)):this.fetchData.list.forEach((item)=>this.shopfalse(item))//根据取反后的状态进行相应的店铺按钮操作   
+                    this.fetchData.status?
+                    this.fetchData.list.forEach((item)=>this.shoptrue(item)):
+                    this.fetchData.list.forEach((item)=>this.shopfalse(item))//根据取反后的状态进行相应的店铺按钮操作   
                 },
                 add(pro){
                     pro.num++
-                    pro.checked?this.fetchData.allnum++:''
                     pro.sum+=pro.price
-                    pro.checked?this.fetchData.allsum+=pro.price:this.fetchData.allsum
+                    if(pro.checked){
+                        this.fetchData.allnum++
+                        this.fetchData.allsum+=pro.price
+                    }
                 },
                 reduce(pro){
-                    if(pro.num===1){
-                        pro.num
-                    }else{
-                        pro.num--
-                        pro.checked?this.fetchData.allnum--:''
-                        pro.sum-=pro.price
-                        pro.checked?this.fetchData.allsum-=pro.price:this.fetchData.allsum
+                    if(pro.num===1) return
+                    pro.num--
+                    pro.sum-=pro.price
+                    if(pro.checked){
+                        this.fetchData.allnum--
+                        this.fetchData.allsum-=pro.price
                     }
                 },
                 calculate(pro){
                     let oldsum=pro.sum//之前的总价
                     let oldnum=oldsum/pro.price//之前的数量
-                    pro.num=parseInt(pro.num)//现在的数量
+                    pro.num=parseInt(pro.num)
                     pro.num>0?pro.sum=pro.num*pro.price:pro.num=oldnum//如果输入数量大于0，计算价格，否则返回之前的数量
                     let diffsum=pro.sum-oldsum//差价
                     let diffnum=pro.num-oldnum//差量

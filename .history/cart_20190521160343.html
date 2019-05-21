@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>购物车</title>
+    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./css/carts.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+</head>
+<body>
+    <div id="cart">
+    <section class="cartMain">
+        <div class="cartMain_hd">
+            <ul class="order_lists cartTop">
+                <li class="list_chk">
+                    <!--所有商品全选-->
+                    <input type="checkbox" id="all" class="whole_check">
+                    <label for="all" :class="fetchData.status?'mark':''" @click="cartchoose()"></label>
+                    全选
+                </li>
+                <li class="list_con">商品信息</li>
+                <li class="list_info">商品参数</li>
+                <li class="list_price">单价</li>
+                <li class="list_amount">数量</li>
+                <li class="list_sum">金额</li>
+                <li class="list_op">操作</li>
+               
+            </ul>
+        </div>
+
+         <div class="cartBox" v-for="item in fetchData.list" key="index">
+            <div class="shop_info">
+                <div class="all_check">
+                    <input type="checkbox" id="shop_a" class="shopChoice">
+                    <label for="shop_a" class="shop" :class="item.check?'mark':''" @click="shopchoose(item)"></label>
+                </div>
+                <div class="shop_name">
+                    店铺：<a href="javascript:;">{{item.shop_name}}</a>
+                </div>
+            </div>
+            <div class="order_content">
+                <ul class="order_lists" v-for="pro in item.products">
+                    <li class="list_chk">
+                        <input type="checkbox" id="checkbox_2" class="son_check">
+                        <label for="checkbox_2" :class="pro.checked?'mark':''" @click="choose(item,pro)"></label>
+                    </li>
+                    <li class="list_con">
+                        <div class="list_img"><a href="javascript:;"><img :src="pro.img" alt=""></a></div>
+                        <div class="list_text"><a href="javascript:;">{{pro.text}}</a>
+                        <span class="list_custom">定制</span>
+                        </div>
+                    </li>
+                    <li class="list_info">
+                        <p>规格：默认</p>
+                        <p>尺寸：16*16*3(cm)</p>
+                    </li>
+                    <li class="list_price">
+                        <p class="price">￥{{pro.price}}</p>
+                        <div class="charge">
+                            <p>更多促销</p>
+                            <div class="chargebox">
+                                测试
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list_amount">
+                        <div class="amount_box">
+                            <a href="javascript:;" class="reduce reSty" @click="reduce(pro)">-</a>
+                            <input type="text" v-model="pro.num" class="sum" v-on:input="calculate(pro)">
+                            <a href="javascript:;" class="plus" @click="add(pro)">+</a>
+                        </div>
+                    </li>
+                    <li class="list_sum">
+                        <p class="sum_price">￥{{pro.sum}}</p>
+                    </li>
+                    <li class="list_op">
+                        <p class="collect"><a href="javascript:;" class="colBtn">收藏商品</a></p>
+                        <p class="del"><a href="javascript:;" class="delBtn">移除商品</a></p>
+                        <p class="custom"><a href="javascript:;" class="cusBtn">定制商品</a></p>
+                        <div class="custombox">
+                                测试
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div> 
+
+        
+        
+        <!--底部-->
+        <div class="bar-wrapper">
+            <div class="bar-right">
+                <div class="piece">已选商品<strong class="piece_num">{{this.fetchData.allnum}}</strong>件</div>
+                <div class="totalMoney">共计: <strong class="total_text">￥{{this.fetchData.allsum}}</strong></div>
+                <div class="calBtn"><a href="javascript:;">结算</a></div>
+            </div>
+        </div>
+    </section>
+    <section class="model_bg"></section>
+    <section class="my_model">
+        <p class="title">删除宝贝<span class="closeModel">X</span></p>
+        <p>您确认要删除该宝贝吗？</p>
+        <div class="opBtn"><a href="javascript:;" class="dialog-sure">确定</a><a href="javascript:;" class="dialog-close">关闭</a></div>
+    </section>
+    </div>
+    <script>
+        new Vue({
+            el:'#cart',
+            data(){
+                return{
+                    fetchData:{
+                        list:[
+                            {
+                                shop_id:1,
+                                shop_name:'搜猎人艺术生活',
+                                products:[
+                                    {
+                                        pro_id:101,
+                                        text:'洗面奶洗面奶洗面奶洗面奶洗面奶洗面奶洗面奶洗面奶',
+                                        price:480,
+                                        num:1,
+                                        img:'./images/1.png',
+                                        sum:480,
+                                        checked:false//商品选中状态
+                                    },
+                                    {
+                                        pro_id:102,
+                                        text:'花露水花露水花露水花露水花露水花露水花露水花露水',
+                                        price:680,
+                                        num:1,
+                                        img:'./images/2.png',
+                                        sum:680,
+                                        checked:false
+                                    },
+                                    {
+                                        pro_id:103,
+                                        text:'燕麦片燕麦片燕麦片燕麦片燕麦片燕麦片燕麦片燕麦片',
+                                        price:380,
+                                        num:1,
+                                        img:'./images/3.png',
+                                        sum:380,
+                                        checked:false
+                                    }
+                                ],
+                                check:false,//店铺选中状态
+                                choose:0,//商品选中个数
+                            },
+                            {
+                                shop_id:2,
+                                shop_name:'卷卷旗舰店',
+                                products:[
+                                    {
+                                        pro_id:201,
+                                        text:'剃须刀剃须刀剃须刀剃须刀剃须刀剃须刀剃须刀剃须刀',
+                                        price:580,
+                                        num:1,
+                                        img:'./images/4.png',
+                                        sum:580,
+                                        checked:false
+                                    },
+                                    {
+                                        pro_id:202,
+                                        text:'卫生纸卫生纸卫生纸卫生纸卫生纸卫生纸卫生纸卫生纸',
+                                        price:780,
+                                        num:1,
+                                        img:'./images/5.png',
+                                        sum:780,
+                                        checked:false
+                                    }
+                                ],
+                                check:false,
+                                choose:0,
+                            },
+                            {
+                                shop_id:3,
+                                shop_name:'瓜皮的神秘商店',
+                                products:[
+                                    {
+                                        pro_id:301,
+                                        text:'眼镜片眼镜片眼镜片眼镜片眼镜片眼镜片眼镜片眼镜片',
+                                        price:180,
+                                        num:1,
+                                        img:'./images/6.png',
+                                        sum:180,
+                                        checked:false
+                                    },
+                                    {
+                                        pro_id:302,
+                                        text:'凑数的凑数的凑数的凑数的凑数的凑数的凑数的凑数的',
+                                        price:280,
+                                        num:1,
+                                        img:'./images/7.png',
+                                        sum:280,
+                                        checked:false
+                                    }                                
+                                ],
+                                check:false,
+                                choose:0,
+                            }
+                        ],
+                    status:false,//全选选中状态
+                    allchoose:0,//店铺选中个数
+                    allsum:0,//总计价格
+                    allnum:0,//总计数量
+                    }
+                }
+            },
+            methods:{
+                choosetrue(item,pro){
+                    pro.checked=true//将商品选中状态改为true
+                    ++item.choose===item.products.length?item.check=true:''//这里执行了两部，选中商品数量先+1，再与该店铺商品数量比较，如果相等就更改店铺选中状态为true
+                    item.check?++this.fetchData.allchoose===this.fetchData.list.length?this.fetchData.status=true:this.fetchData.status=false:''//如果店铺选中状态改为true，选中店铺数量先+1，再与店铺数量比较，如果相等就更改全选选中状态为true     
+                    this.fetchData.allsum+=pro.sum
+                    this.fetchData.allnum+=pro.num
+                },
+                choosefalse(item,pro){
+                    pro.checked=false//将商品选中状态改为false
+                    --item.choose//选中商品数量-1
+                    if(item.check){//如果店铺是被选中的，更改店铺选中状态
+                        item.check=false
+                        --this.fetchData.allchoose//并且选中店铺数量-1
+                    }
+                    this.fetchData.status=false//无论之前全选的状态，将其改为false就行
+                    this.fetchData.allsum-=pro.sum//商品总计价格变动
+                    this.fetchData.allnum-=pro.num
+                },
+                choose(item,pro){
+                    !pro.checked?this.choosetrue(item,pro):this.choosefalse(item,pro)
+                },
+                shoptrue(item){
+                    item.products.forEach((pro)=>{
+                        this.choose(item,pro)
+                        // pro.checked===false?this.choosetrue(item,pro):''//循环店铺中的商品，先筛选出目前没选中的商品，给它执行choosetrue函数
+                    })
+                },
+                shopfalse(item){
+                    item.products.forEach((pro)=>{
+                        this.choose(item,pro)
+                        // pro.checked===true?this.choosefalse(item,pro):''//循环店铺中的商品，先筛选出目前被选中的商品，给它执行choosefalse函数
+                    })
+                },
+                shopchoose(item){
+                    !item.check?this.shoptrue(item):this.shopfalse(item)
+                },
+                cartchoose(){
+                    this.fetchData.status=!this.fetchData.status//取反改变状态
+                    this.fetchData.status?this.fetchData.list.forEach((item)=>this.shoptrue(item)):this.fetchData.list.forEach((item)=>this.shopfalse(item))//根据取反后的状态进行相应的店铺按钮操作   
+                },
+                add(pro){
+                    pro.num++
+                    pro.checked&&this.fetchData.allnum++
+                    pro.sum+=pro.price
+                    pro.checked?this.fetchData.allsum+=pro.price:this.fetchData.allsum
+                },
+                reduce(pro){
+                    if(pro.num===1){
+                        pro.num
+                    }else{
+                        pro.num--
+                        pro.checked&&this.fetchData.allnum--
+                        pro.sum-=pro.price
+                        pro.checked?this.fetchData.allsum-=pro.price:this.fetchData.allsum
+                    }
+                },
+                calculate(pro){
+                    let oldsum=pro.sum//之前的总价
+                    let oldnum=oldsum/pro.price//之前的数量
+                    pro.num>0?pro.sum=pro.num*pro.price:pro.num=oldnum//如果输入数量大于0，计算价格，否则返回之前的数量
+                    let diffsum=pro.sum-oldsum//差价
+                    let diffnum=pro.num-oldnum//差量
+                    if(pro.checked){//如果商品被选中                        
+                        this.fetchData.allsum+=diffsum//计算总价
+                        this.fetchData.allnum+=diffnum//计算总量
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+</html>
